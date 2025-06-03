@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "main.h"
+#include "classTest.h"
 
 #include <Keyboard.h>          // DirectXTK
 #include <SimpleMath.h>        // DirectXTK 便利数学ユーティリティ
@@ -32,10 +33,12 @@ std::unique_ptr<Keyboard> g_keyboard;   // DirectXTK Keyboard
 // フォント描画用
 std::unique_ptr<SpriteBatch> g_spriteBatch;
 std::unique_ptr<SpriteFont>  g_spriteFont;
+std::wstring text[4];
 
 // このコード モジュールに含まれる関数の宣言を転送します:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
+void                Update();
 void                Render();
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
@@ -90,6 +93,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         // 画面を塗りつぶす
         D3DManager::GetInstance().Clear(0.3f, 0.5f, 0.9f, 1.0f);
         
+        // 更新処理
+        Update();
+
         // 描画処理
         Render();
 
@@ -103,6 +109,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 //
+//  関数: Update()
+//
+//  目的: ゲームの更新処理を行います。
+//
+void Update()
+{
+    text[0] = std::to_wstring(0);
+    text[1] = std::to_wstring(0);
+    text[2] = std::to_wstring(0);
+    text[3] = std::to_wstring(0);
+}
+
+
+//
 //  関数: Render()
 //
 //  目的: 画面の描画処理を行います。
@@ -111,13 +131,14 @@ void Render()
 {
     g_spriteBatch->Begin();
 
-    g_spriteFont->DrawString(g_spriteBatch.get(),
-        L"SpriteFont",
-        Vector2(100, 100));
-
-    g_spriteFont->DrawString(g_spriteBatch.get(),
-        L"こんにちは！",
-        Vector2(100, 150));
+    Vector2 drawPos(100, 100);
+    for (auto & str : text)
+    {
+        g_spriteFont->DrawString(g_spriteBatch.get(),
+            str.c_str(),
+            drawPos);
+        drawPos.y += 50;
+    }
 
     g_spriteBatch->End();
 }
